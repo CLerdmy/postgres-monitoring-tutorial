@@ -1,0 +1,113 @@
+import { state } from "../state.js";
+
+export function initQuiz(levelNumber){
+
+    const levelKey = "level" + levelNumber;
+
+    const panels = document.querySelectorAll(".test-panel");
+
+    const answers = state.quizAnswers[levelKey];
+
+    panels.forEach((panel,index)=>{
+
+        const qId = index + 1;
+
+        const correct = panel.dataset.correct;
+        const explanation = panel.dataset.explanation;
+
+        const options = panel.querySelectorAll(".test-option");
+        const feedback = panel.querySelector(".test-feedback");
+
+        if(answers[qId]){
+
+            options.forEach(opt=>{
+
+                opt.disabled = true;
+
+                if(opt.dataset.value === correct){
+                    opt.classList.add("correct");
+                }
+
+                if(opt.dataset.value === answers[qId] && answers[qId] !== correct){
+                    opt.classList.add("incorrect");
+                }
+
+            });
+
+            feedback.innerHTML =
+                (answers[qId] === correct
+                    ? `<span style="color:#4ade80">Правильно.</span>`
+                    : `<span style="color:#f87171">Неверно.</span>`)
+                + `<br>${explanation}`;
+        }
+
+        options.forEach(option=>{
+
+            option.addEventListener("click",()=>{
+
+                if(answers[qId]) return;
+
+                const value = option.dataset.value;
+
+                answers[qId] = value;
+
+                options.forEach(opt=>{
+
+                    opt.disabled = true;
+
+                    if(opt.dataset.value === correct){
+                        opt.classList.add("correct");
+                    }
+
+                });
+
+                if(value === correct){
+
+                    option.classList.add("correct");
+
+                    feedback.innerHTML =
+                        `<span style="color:#4ade80">Правильно.</span><br>${explanation}`;
+
+                } else {
+
+                    option.classList.add("incorrect");
+
+                    feedback.innerHTML =
+                        `<span style="color:#f87171">Неверно.</span><br>${explanation}`;
+                }
+
+                checkCompletion(levelNumber);
+
+            });
+
+        });
+
+    });
+
+}
+
+function checkCompletion(levelNumber){
+
+    const answers = state.quizAnswers["level"+levelNumber];
+
+    if(Object.keys(answers).length === 10){
+
+        if(state.completedLevels < levelNumber){
+            state.completedLevels = levelNumber;
+        }
+
+        const nextBtn = document.querySelector(".next");
+
+        if(nextBtn){
+            nextBtn.disabled = false;
+        }
+
+        const progress = document.querySelector(".progress");
+
+        if(progress){
+            progress.textContent = `Progress: ${state.completedLevels}/5`;
+        }
+
+    }
+
+}
