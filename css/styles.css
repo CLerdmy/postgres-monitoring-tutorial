@@ -88,6 +88,17 @@ Layout: progress | title | empty
 
 }
 
+/* Accuracy counter (right side) */
+
+.accuracy {
+
+    text-align: right;
+
+    font-size: 14px;
+
+    opacity: 0.8;
+
+}
 
 /* Progress counter */
 
