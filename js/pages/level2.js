@@ -508,7 +508,7 @@ export function renderLevel2() {
             explanation: "Grafana хранит свои метаданные (дашборды, настройки) в небольшой базе (SQLite/MySQL/Postgres), а сами метрики остаются в источнике данных (например, Prometheus или InfluxDB), откуда Grafana их читает."
         }),
 
-        navigateButtons()
+        navigateButtons("level1", "level3")
     
     ];
 
