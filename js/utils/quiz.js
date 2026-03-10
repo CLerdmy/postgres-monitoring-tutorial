@@ -2,7 +2,7 @@ import { state } from "../state.js";
 
 export function initQuiz(levelNumber){
 
-    const levelKey = "level" + levelNumber;
+    const levelKey = levelNumber === 6 ? "final" : "level" + levelNumber;
 
     const panels = document.querySelectorAll(".test-panel");
 
@@ -51,6 +51,12 @@ export function initQuiz(levelNumber){
 
                 answers[qId] = value;
 
+                state.stats.totalAnswers++;
+
+                if(value === correct){
+                    state.stats.correctAnswers++;
+                }
+
                 options.forEach(opt=>{
 
                     opt.disabled = true;
@@ -65,15 +71,13 @@ export function initQuiz(levelNumber){
 
                     option.classList.add("correct");
 
-                    feedback.innerHTML =
-                        `<span style="color:#4ade80">Правильно.</span><br>${explanation}`;
+                    feedback.innerHTML = `<span style="color:#4ade80">Правильно.</span><br>${explanation}`;
 
                 } else {
 
                     option.classList.add("incorrect");
 
-                    feedback.innerHTML =
-                        `<span style="color:#f87171">Неверно.</span><br>${explanation}`;
+                    feedback.innerHTML = `<span style="color:#f87171">Неверно.</span><br>${explanation}`;
                 }
 
                 checkCompletion(levelNumber);
@@ -88,12 +92,16 @@ export function initQuiz(levelNumber){
 
 function checkCompletion(levelNumber){
 
-    const answers = state.quizAnswers["level"+levelNumber];
+    const levelKey = levelNumber === 6 ? "final" : "level"+levelNumber;
+
+    const answers = state.quizAnswers[levelKey];
 
     if(Object.keys(answers).length === 10){
 
-        if(state.completedLevels < levelNumber){
-            state.completedLevels = levelNumber;
+        if(levelNumber <= 5){
+
+            state.completedLevels += 1;
+
         }
 
         const nextBtn = document.querySelector(".next");
@@ -102,12 +110,26 @@ function checkCompletion(levelNumber){
             nextBtn.disabled = false;
         }
 
-        const progress = document.querySelector(".progress");
+        updateProgress();
 
-        if(progress){
-            progress.textContent = `Progress: ${state.completedLevels}/5`;
-        }
+    }
 
+}
+
+function updateProgress(){
+
+    const progress = document.querySelector(".progress");
+    const accuracy = document.querySelector(".accuracy");
+
+    if(progress){
+        progress.textContent = `Уровней изучено: ${state.completedLevels}/5`;
+    }
+
+    if(accuracy){
+
+        const percent = state.stats.totalAnswers === 0 ? 0 : Math.round((state.stats.correctAnswers / state.stats.totalAnswers) * 100);
+
+        accuracy.textContent = `Правильных ответов: ${percent}%`;
     }
 
 }
