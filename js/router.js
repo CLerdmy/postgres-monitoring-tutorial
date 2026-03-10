@@ -44,4 +44,6 @@ export function renderPage(page) {
 
     setupNavigation();
 
+    window.scrollTo(0, 0);
+
 }
