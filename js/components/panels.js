@@ -35,11 +35,11 @@ export function gridPanels(leftPanel, rightPanel) {
     `;
 }
 
-export function navigateButtons() {
+export function navigateButtons(left, right) {
     return `
         <div class="page-navigation">
-            <button class="nav-button prev" data-prev="intro">Назад</button>
-            <button class="nav-button next" data-next="level2" disabled>Далее</button>
+            <button class="nav-button prev" data-prev=${left}>Назад</button>
+            <button class="nav-button next" data-next=${right} disabled>Далее</button>
         </div>
     `;
 }
