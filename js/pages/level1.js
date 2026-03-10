@@ -381,7 +381,7 @@ export function renderLevel1() {
             explanation:"%util показывает процент времени, когда диск был занят операциями ввода-вывода."
         }),
 
-        navigateButtons()
+        navigateButtons("intro", "level1")
     
     ];
 
