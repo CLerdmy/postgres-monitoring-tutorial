@@ -9,13 +9,17 @@ function renderHeader(){
 
     <div class="header-grid">
 
-        <div class="progress">Уровней изучено: ${state.completedLevels}/5</div>
+        <div class="progress">
+            Уровней изучено: ${state.completedLevels}/5
+        </div>
 
         <h1 class="title">
             PostgreSQL Monitoring Tutorial
         </h1>
 
-        <div></div>
+        <div class="accuracy">
+            ${state.stats.totalAnswers === 0 ? "Правильных ответов: 0%" : `Правильных ответов: ${Math.round((state.stats.correctAnswers/state.stats.totalAnswers)*100)}%`}
+        </div>
 
     </div>
 
