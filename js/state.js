@@ -15,7 +15,15 @@ export const state = {
         level2: {},
         level3: {},
         level4: {},
-        level5: {}
+        level5: {},
+        final: {}
+
+    },
+
+    stats: {
+
+        totalAnswers: 0,
+        correctAnswers: 0
 
     }
 
