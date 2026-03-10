@@ -47,11 +47,11 @@ export function renderFinal() {
             question: "Что показывает расширение pg_buffercache?",
             options: [
                 "содержимое WAL-файла",
-                "состояние буферного кеша памяти PostgreSQL",
+                "состояние буферного кэша памяти PostgreSQL",
                 "текущие SQL-сессии",
                 "статистику таблиц"
             ],
-            correct: "состояние буферного кеша памяти PostgreSQL",
+            correct: "состояние буферного кэша памяти PostgreSQL",
             explanation: "pg_buffercache позволяет просматривать содержимое shared buffer cache - какие страницы каких таблиц загружены в память."
         }),        
 
@@ -116,11 +116,11 @@ export function renderFinal() {
             options: [
                 "статистику по таблицам с именами, начинающимися на 'slru'",
                 "сспользование памяти страниц SQL (Shared Memory)",
-                "статистику операций над SLRU-кешами (например, commit_timestamp, multixact)",
+                "статистику операций над SLRU-кэшами (например, commit_timestamp, multixact)",
                 "статистику по индексам, использующим SLRU-алгоритм"
             ],
-            correct: "статистику операций над SLRU-кешами (например, commit_timestamp, multixact)",
-            explanation: "SLRU (Simple LRU) используется для низкоуровневых кешей PostgreSQL. pg_stat_slru содержит по одной строке на каждый SLRU-кеш и показывает число операций чтения/записи блоков, попаданий в кеш и усечений."
+            correct: "статистику операций над SLRU-кэшами (например, commit_timestamp, multixact)",
+            explanation: "SLRU (Simple LRU) используется для низкоуровневых кэшей PostgreSQL. pg_stat_slru содержит по одной строке на каждый SLRU-кэш и показывает число операций чтения/записи блоков, попаданий в кэш и усечений."
         }),
 
         quizPanel({
