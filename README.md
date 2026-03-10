@@ -9,3 +9,7 @@ The project is a **Single Page Application (SAP)** built with **HTML, CSS and Ja
 - Images are stored in `resources/img` as `.png` files
 - The main HTML file is `index.html`, and styles are in `css/styles.css`
 - JavaScript code is organized in the `js` folder: core files (`app.js`, `router.js`, `state.js`), page files in `pages/`, utility functions in `utils/`, and reusable UI parts in `components/`
+
+## GitHub Pages
+
+**Link**: https://clerdmy.github.io/postgres-monitoring-tutorial/
