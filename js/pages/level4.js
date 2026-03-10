@@ -241,7 +241,7 @@ export function renderLevel4() {
             explanation: "Запрос группирует страницы из pg_buffercache по таблицам (через pg_class) и сортирует по убыванию количества страниц. Это показывает, какие таблицы сейчас занимают больше всего места в shared_buffers."
         }),
 
-        navigateButtons()
+        navigateButtons("level3", "level5")
     
     ];
 
