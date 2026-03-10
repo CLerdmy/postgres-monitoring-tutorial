@@ -15,3 +15,12 @@ export function ul(items, { strong = [], code = [] } = {}) {
     return `<ul>${li}</ul>`;
 
 }
+
+export function codeBlock(lines, indentLevel = 0) {
+
+    const indent = '  '.repeat(indentLevel);
+    const formattedLines = lines.map(line => `${indent}${line}`).join('\n');
+
+    return `<pre class="code-block">${formattedLines}</pre>`;
+    
+}
