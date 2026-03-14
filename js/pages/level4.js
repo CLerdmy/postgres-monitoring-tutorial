@@ -111,6 +111,133 @@ export function renderLevel4() {
             p("auto_explain автоматически запишет в лог план выполнения с детализацией по узлам, времени и использованию буферов для всех медленных запросов.")
         ]),
 
+        titlePanel("Внешнее расширение pg_wait_sampling"),
+
+        textPanel("pg_wait_sampling", [
+            p("pg_wait_sampling - расширение для мониторинга событий ожидания (wait events) в PostgreSQL.",
+            { code: ["pg_wait_sampling"] }),
+            ul([
+                "показывает, на чем процессы PostgreSQL ожидают (I/O, блокировки, CPU)",
+                "собирает статистику ожиданий с помощью периодического sampling",
+                "позволяет анализировать причины задержек выполнения запросов"
+            ]),
+            p("Расширение собирает два типа статистики:"),
+            ul([
+                "history - история событий ожидания",
+                "profile - агрегированная статистика ожиданий"
+            ]),
+            p("В официальном репозитории расширения (https://github.com/postgrespro/pg_wait_sampling) указаны инструкции по установке и сборке модуля.", 
+                { strong: "https://github.com/postgrespro/pg_wait_sampling" }
+            ),
+
+            p("После установки необходимо добавить его в конфигурацию PostgreSQL:"),
+            codeBlock([
+                "shared_preload_libraries = 'pg_wait_sampling'"
+            ], 0),
+        ]),
+
+        imagePanel("Пример: текущие ожидания", "resources/img/waits.png"),
+
+        gridPanels(
+            textPanel("SQL запрос", [
+                codeBlock([
+                    "SELECT event_type, event, count(*) AS wait_count",
+                    "FROM pg_wait_sampling_current",
+                    "GROUP BY 1,2",
+                    "ORDER BY 3 DESC",
+                    "LIMIT 10;"
+                ], 0)
+            ]),
+            
+            textPanel("Пояснения", [
+                p("Запрос показывает текущие события ожидания процессов PostgreSQL."),
+                
+                p("Основные поля:"),
+                ul([
+                    "event_type - тип ожидания (Activity, IO, Lock, Client)",
+                    "event - конкретное событие ожидания",
+                    "wait_count - количество зафиксированных ожиданий"
+                ]),
+                
+                p("Что показывает:"),
+                ul([
+                    "какие внутренние процессы PostgreSQL сейчас активны",
+                    "на чем сервер чаще всего ожидает",
+                    "есть ли проблемы с I/O или блокировками"
+                ])
+            ])
+        ),
+
+        imagePanel("Пример: агрегированная статистика ожиданий", "resources/img/waitsagg.png"),
+
+        gridPanels(
+            textPanel("SQL запрос", [
+                codeBlock([
+                    "SELECT event_type, event, count(*) AS sample_count",
+                    "FROM pg_wait_sampling_profile",
+                    "GROUP BY 1,2",
+                    "ORDER BY 3 DESC;"
+                ], 0)
+            ]),
+            
+            textPanel("Пояснения", [
+                p("Представление показывает агрегированную статистику ожиданий PostgreSQL."),
+
+                p("Основные поля:", { code: ["event_type","event","sample_count"] }),
+                ul([
+                    "event_type - тип события ожидания",
+                    "event - конкретная операция ожидания",
+                    "sample_count - количество зафиксированных samples"
+                ]),
+
+                p("Что показывает:"),
+
+                ul([
+                    "какие типы ожиданий происходят чаще всего",
+                    "нагрузку на диск (DataFileRead, DataFileWrite)",
+                    "работу WAL (WALSync)",
+                    "ожидание клиентских запросов (ClientRead)"
+                ])
+            ])
+        ),
+
+        imagePanel("Пример: история ожиданий", "resources/img/history.png"),
+
+        gridPanels(
+            textPanel("SQL запрос", [
+                codeBlock([
+                    "SELECT",
+                    "  date_trunc('minute', ts) AS minute,",
+                    "  event_type,",
+                    "  event,",
+                    "  count(*) AS wait_count",
+                    "FROM pg_wait_sampling_history",
+                    "WHERE ts > now() - interval '5 minutes'",
+                    "GROUP BY 1,2,3",
+                    "ORDER BY 1 DESC, 4 DESC;"
+                ], 0)
+            ]),
+            
+            textPanel("Пояснения", [
+                p("Запрос показывает историю событий ожидания PostgreSQL за последние 5 минут."),
+
+                p("Основные поля:", { code: ["ts","event_type","event"] }),
+                ul([
+                    "ts - время фиксации события",
+                    "event_type - тип ожидания",
+                    "event - конкретное событие"
+                ]),
+
+                p("Что показывает:"),
+
+                ul([
+                    "динамику нагрузки PostgreSQL во времени",
+                    "какие процессы чаще всего выполняются",
+                    "появление I/O ожиданий или активности фоновых процессов"
+                ])
+            ])
+        ),
+
         quizPanel({
             id: 1,
             question: "Какое расширение PostgreSQL помогает отслеживать самые длительные запросы?",
