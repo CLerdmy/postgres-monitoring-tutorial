@@ -21,15 +21,13 @@ export function renderLevel5() {
             p("Внутренняя телеметрия PostgreSQL - это встроенные средства сбора и представления статистики о внутренних процессах СУБД и низкоуровневых операциях (WAL, фоновый писатель, кэш-блоки, память и т.д.).",
             { strong: ["Внутренняя телеметрия"] }),
             p("Эти данные собираются в системных представлениях и функциях статистического модуля PostgreSQL и позволяют глубоко анализировать работу СУБД без сторонних инструментов."),
-            p("К данной категории относятся системные представления статистики, которые показывают состояние и активность внутренних механизмов СУБД: статистика генерации WAL, активности фонового писателя, чекпоинтера, операций ввода-вывода, работы кэша страниц, распределения памяти и т.д.",
-            { strong: ["без сторонних инструментов"] }),
-            p("Для сбора некоторых показателей требуется включить параметры конфигурации: track_io_timing, track_wal_io_timing.",
-            { code: ["track_io_timing", "track_wal_io_timing"] })
+            p("К данной категории относятся системные представления статистики, которые показывают состояние и активность внутренних механизмов СУБД: статистика генерации WAL, активности фонового писателя, операций ввода-вывода, работы кэша страниц, распределения памяти и т.д.",
+            { strong: ["без сторонних инструментов"] })
         ]),
 
         gridPanels(
             textPanel("pg_stat_archiver", [
-                p("Содержит одну строку с данными о работе процесса архивации WAL:",
+                p("Содержит строку с данными о работе процесса архивации WAL. Основные статистики таблицы:",
                 { code: ["pg_stat_archiver"] }),
                 ul([
                     "archived_count - число успешно заархивированных файлов",
@@ -40,32 +38,38 @@ export function renderLevel5() {
             ]),
             
             textPanel("pg_stat_bgwriter", [
-                p("Статистика фонового писателя:",
+                p("Статистика фонового писателя. Основные статистики таблицы:",
                 { code: ["pg_stat_bgwriter"] }),
                 ul([
                     "buffers_clean - число записанных фоновых буферов",
-                    "bgwriter_maxwritten - сколько раз писатель останавливался из-за лимита",
+                    "maxwritten_clean - сколько раз писатель останавливался из-за лимита",
                     "buffers_backend - число буферов, записанных серверным процессом",
                     "buffers_alloc - общее число выделенных буферов"
-                ], { code: ["buffers_clean","bgwriter_maxwritten","buffers_backend","buffers_alloc"] })
+                ], { code: ["buffers_clean","maxwritten_clean","buffers_backend","buffers_alloc"] })
             ])
         ),
 
         gridPanels(
-            textPanel("pg_stat_checkpointer", [
-                p("Статистика процесса чекпоинтов (с PostgreSQL 17):",
-                { code: ["pg_stat_checkpointer"] }),
+            textPanel("pg_stat_io", [
+                p("Агрегированная статистика ввода-вывода. Строка на каждое сочетание:",
+                { code: ["pg_stat_io"] }),
                 ul([
-                    "num_timed - чекпоинты по таймауту",
-                    "num_requested - чекпоинты по запросу",
-                    "buffers_written - сколько буферов записано",
-                    "write_time - время записи на диск",
-                    "sync_time - время синхронизации файлов"
-                ], { code: ["num_timed","num_requested","buffers_written","write_time","sync_time"] })
+                    "типа бэкенда (backend_type)",
+                    "типа объекта (relation, temp relation, wal)",
+                    "контекста I/O (normal, init, vacuum, bulkread, bulkwrite)"
+                ]),
+                p("Показывает:"),
+                ul([
+                    "reads, writes - число операций чтения/записи",
+                    "read_time, write_time - время ожидания I/O (при track_io_timing)",
+                    "hits - число попаданий в кэш",
+                    "evictions - число вытеснений из кэша",
+                    "extends - операции расширения файлов"
+                ], { code: ["reads","writes","read_time","write_time","hits","evictions","extends"] })
             ]),
             
             textPanel("pg_stat_wal", [
-                p("Сводная статистика WAL:",
+                p("Сводная статистика WAL. Основные статистики таблицы:",
                 { code: ["pg_stat_wal"] }),
                 ul([
                     "wal_records - общее число записей WAL",
@@ -76,27 +80,9 @@ export function renderLevel5() {
             ])
         ),
 
-        textPanel("pg_stat_io", [
-            p("Агрегированная статистика ввода-вывода. Строка на каждое сочетание:", 
-            { code: ["pg_stat_io"] }),
-            ul([
-                "типа бэкенда (backend_type)",
-                "типа объекта (relation, temp relation, wal)",
-                "контекста I/O (normal, init, vacuum, bulkread, bulkwrite)"
-            ]),
-            p("Показывает:"),
-            ul([
-                "reads, writes - число операций чтения/записи",
-                "read_time, write_time - время ожидания I/O (при track_io_timing)",
-                "hits - число попаданий в кэш",
-                "evictions - число вытеснений из кэша",
-                "extends - операции расширения файлов"
-            ], { code: ["reads","writes","read_time","write_time","hits","evictions","extends"] })
-        ]),
-
         gridPanels(
             textPanel("pg_stat_slru", [
-                p("Статистика операций в SLRU-кэше (simple LRU):",
+                p("Статистика операций в SLRU-кэше (simple LRU). Основные статистики таблицы:",
                 { code: ["pg_stat_slru"] }),
                 ul([
                     "blks_zeroed - нулевые блоки",
@@ -116,7 +102,7 @@ export function renderLevel5() {
                     "used_bytes - используемая память",
                     "free_bytes - свободная память"
                 ], { code: ["name","total_bytes","used_bytes","free_bytes"] }),
-                p("Доступ: суперпользователи или роль pg_read_all_stats.",
+                p("Необходим доступ: суперпользователи или роль pg_read_all_stats.",
                 { code: ["pg_read_all_stats"] })
             ])
         ),
@@ -130,29 +116,28 @@ export function renderLevel5() {
             ]),
             p("Оценивает нагрузку на диск и объем данных для репликации и резервирования."),
             
-            p("Буферный кэш:", { strong: ["буферный кэш"] }),
+            p("Буферный кэш:", { strong: ["Буферный кэш"] }),
             ul([
                 "число попаданий в кэш (hits) из pg_stat_io",
                 "число вытеснений из кэша (evictions)"
-            ]),
+            ], { code: ["pg_stat_io"] }),
             p("Высокое hits - эффективное использование памяти, большой evictions - недостаток кэш-памяти (нужно увеличить shared_buffers).",
             { code: ["shared_buffers"] }),
             
-            p("Фоновый писатель и чекпоинты:", { strong: ["фоновый писатель", "чекпоинты"] }),
+            p("Фоновый писатель:", { strong: ["Фоновый писатель"] }),
             ul([
                 "buffers_clean, buffers_checkpoint, buffers_written",
-                "num_timed, num_requested",
                 "write_time, sync_time"
             ]),
             p("Показывают активность базовых процессов по обеспечению устойчивости данных."),
             
-            p("Ввод-вывод:", { strong: ["ввод-вывод"] }),
+            p("Ввод-вывод:", { strong: ["Ввод-вывод"] }),
             ul([
                 "read_time, write_time по разным контекстам",
                 "отличие обычного I/O от bulk-операций или операций во время вакуума"
             ]),
             
-            p("Память:", { strong: ["память"] }),
+            p("Память:", { strong: ["Память"] }),
             ul([
                 "used_bytes, free_bytes в pg_backend_memory_contexts",
                 "помогает находить утечки или дисбаланс распределения памяти по контекстам"
