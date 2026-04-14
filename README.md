@@ -13,3 +13,19 @@ The project is a **Single Page Application (SAP)** built with **HTML, CSS and Ja
 ## GitHub Pages
 
 **Link**: https://clerdmy.github.io/postgres-monitoring-tutorial/
+
+## Run with Docker
+
+**Build image**:
+```bash
+docker build -t postgres-monitoring-tutorial .
+```
+
+**Run container**:
+```bash
+docker run -p 8080:80 postgres-monitoring-tutorial
+```
+
+**Open**: http://localhost:8080
+
+---
